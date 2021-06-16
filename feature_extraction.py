@@ -13,29 +13,22 @@ import nltk
 from nltk.corpus import stopwords
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
-from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, precision_score, recall_score
+from typing import List, Tuple
 
 """
 TODO: 
 * Remove RTs
 * What about Emoji's?
+* https://medium.com/verifa/feature-generation-from-tweets-9af0565ad6e6
 """
 
 Tweet = str
-
-#https://medium.com/verifa/feature-generation-from-tweets-9af0565ad6e6
-
-data = pd.read_csv("archive/NoRTdata.csv")
-
-data.dropna(inplace=True)
-data = data.sample(n=80000)
-
 STEMMER = PorterStemmer()
 TOKENIZER = RegexpTokenizer(r'\w+')
 STOP_WORDS = stopwords.words("english")
 
+"""Some helper fuctinos"""
 def CleanTweet(tweet: Tweet) -> Tweet:
     tweet = tweet.lower() # convert text to lower-case
     tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))', '', tweet) # remove URLs
@@ -57,42 +50,32 @@ def compute_ngram_frequencies(tweet: Tweet) -> dict:
     
     return n_gram_frequencies
 
-clean_data: list = []
-columns = ['party', 'tweet']
+def extract_features(data: pd.DataFrame) -> Tuple:
+    vectorizer = CountVectorizer(max_features=150, min_df=5, max_df=0.7)
+    X = vectorizer.fit_transform(data.CleanTweet).toarray()
 
-#1 = Democrat, 0 = Republican
-data['BinaryParty'] = (data['Party'] == "Democrat").astype(int)
-print(data.BinaryParty)
+    tfidfconverter = TfidfTransformer()
+    X = tfidfconverter.fit_transform(X).toarray()
 
+    Y = data.BinaryParty.to_numpy()
 
-clean_tweets = []
-for i in range(len(data)):
-    tweet = data.iloc[i]["Tweet"]
-
-    cleanTweet = CleanTweet(tweet)
-
-    clean_tweets.append(cleanTweet)
-
-data['CleanTweet'] = clean_tweets
+    return train_test_split(X, Y, test_size=0.2)
 
 
+if __name__ == "__main__":
+    """Read original data"""
+    data = pd.read_csv("archive/ExtractedTweets.csv")
+    data.dropna(inplace=True)
 
-vectorizer = CountVectorizer(max_features=1500, min_df=5, max_df=0.7)
-X = vectorizer.fit_transform(data.CleanTweet).toarray()
+    """Add clean tweets, binary party to data"""
+    clean_tweets = []
+    for i in range(len(data)):
+        tweet = data.iloc[i]["Tweet"]
+        cleanTweet = CleanTweet(tweet)
+        clean_tweets.append(cleanTweet)
 
-tfidfconverter = TfidfTransformer()
+    data['CleanTweet'] = clean_tweets
+    data['BinaryParty'] = (data['Party'] == "Democrat").astype(int)
 
-X = tfidfconverter.fit_transform(X).toarray()
-Y = data.BinaryParty.to_numpy()
-
-print(len(X), len(Y))
-
-x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2)
-
-clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 2))
-clf.fit(x_train, y_train)
-
-y_predict = clf.predict(x_test)
-print(y_predict)
-print("Accuracy = " + str(accuracy_score(y_true=y_test, y_pred=y_predict)))
-
+    """Save new data"""
+    data.to_csv("archive/data.csv")
