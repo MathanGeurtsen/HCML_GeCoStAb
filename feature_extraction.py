@@ -52,6 +52,12 @@ def compute_ngram_frequencies(tweet: Tweet) -> dict:
 
 def extract_features(data: pd.DataFrame) -> Tuple:
     vectorizer = CountVectorizer(max_features=150, min_df=5, max_df=0.7)
+def extract_features_csv(file_name: str, max_features:int =150) -> Tuple:
+    data = pd.read_csv(file_name)
+    data.dropna(inplace=True)
+    return extract_features(data, max_features=max_features)
+
+
     X = vectorizer.fit_transform(data.CleanTweet).toarray()
 
     tfidfconverter = TfidfTransformer()
