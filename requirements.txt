@@ -1,0 +1,32 @@
+# This file defines what packages we rely on, 
+# which makes it easy to use a virtual environment,
+# where these installed packages are separate from other 
+# python installs
+#
+# To install a virtual environment, go to the directory
+# and run: `virtualenv my-environment-name`
+#
+# (in case virtualenv isn't installed yet, 
+# run `python -m pip install virtualenv`)
+# 
+# To activate a virtual environment to use the packages
+# run `./my-environment-name/bin/activate.sh`
+# (this depends on what you use to run it: on windows 
+# with powershell it would be
+# `./my-environment-name/Scripts/activate.ps1` )
+#
+# This will make the virtual environment active
+# so running e.g. `python dnn.py` uses 
+# the packages and python from my-environment-name
+# (to deactivate the environment run `deactivate`)
+#
+# Then install these packages like normal: 
+# `pip install -r requirements.txt`
+
+
+pandas==1.2.4
+sklearn==0.0
+numpy==1.20.3
+nltk==3.6.2
+
+
