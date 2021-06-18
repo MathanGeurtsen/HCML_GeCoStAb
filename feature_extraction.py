@@ -51,7 +51,7 @@ def compute_ngram_frequencies(tweet: Tweet) -> dict:
     return n_gram_frequencies
 
 def extract_features(data: pd.DataFrame) -> Tuple:
-    vectorizer = CountVectorizer(max_features=150, min_df=5, max_df=0.7)
+    vectorizer = CountVectorizer(max_features=2000, min_df=5, max_df=0.7)
     X = vectorizer.fit_transform(data.CleanTweet).toarray()
 
     tfidfconverter = TfidfTransformer()
@@ -63,8 +63,12 @@ def extract_features(data: pd.DataFrame) -> Tuple:
 
 
 if __name__ == "__main__":
+    
+    """Data to sanitize"""
+    path = "archive/grouped_data.csv"
+    
     """Read original data"""
-    data = pd.read_csv("archive/ExtractedTweets.csv")
+    data = pd.read_csv(path)
     data.dropna(inplace=True)
 
     """Add clean tweets, binary party to data"""
@@ -78,4 +82,4 @@ if __name__ == "__main__":
     data['BinaryParty'] = (data['Party'] == "Democrat").astype(int)
 
     """Save new data"""
-    data.to_csv("archive/data.csv")
+    data.to_csv(path)
