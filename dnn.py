@@ -8,7 +8,7 @@ from interpret import show
 
 data = pd.read_csv("archive/grouped_data.csv")
 data.dropna(inplace=True)
-x_train, x_test, y_train, y_test = extract_features(data)
+x_train, x_test, y_train, y_test, _ = extract_features(data)
 
 clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 2), max_iter=10000)
 clf.fit(x_train, y_train)
