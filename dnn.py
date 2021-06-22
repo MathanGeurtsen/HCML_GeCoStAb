@@ -1,29 +1,19 @@
-import pandas as pd
-from feature_extraction import extract_features
-from sklearn.metrics import accuracy_score, precision_score, recall_score
+#!/usr/bin/env python
+
+from feature_extraction import extract_features_csv
 from sklearn.neural_network import MLPClassifier
-from interpret.blackbox import LimeTabular
-from interpret.blackbox import ShapKernel
-from interpret import show
 
-data = pd.read_csv("archive/grouped_data.csv")
-data.dropna(inplace=True)
-x_train, x_test, y_train, y_test, _ = extract_features(data)
+from auxiliary import print_metrics
 
-clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 2), max_iter=10000)
-clf.fit(x_train, y_train)
+def run_model():
+    X_train, X_test, y_train, y_test, voc = extract_features_csv("archive/grouped_data.csv", max_features=200)
+    clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 2), max_iter=10000)
+    clf.fit(X_train, y_train)
 
-y_predict = clf.predict(x_test)
+    y_predict = clf.predict(X_test)
+    print_metrics(y_test, y_predict)
+    return clf, X_train, X_test, y_train, y_test, voc, y_predict
 
-print(y_predict)
-print("Accuracy = "  + str(accuracy_score(y_true=y_test, y_pred=y_predict)))
-print("Precision = " + str(precision_score(y_true=y_test, y_pred=y_predict)))
-print("Recall = "    + str(recall_score(y_true=y_test, y_pred=y_predict)))
+if __name__ == "__main__":
+    _ = run_model()
 
-
-
-lime1 = LimeTabular(predict_fn=clf.predict_proba, data=x_train, random_state=1)
-shap1 = ShapKernel(predict_fn=clf.predict_proba, data=x_train)
-
-lime_local1_1 = lime1.explain_local(list(x_test[:1]), list(y_test[:1]), name='LIME_MLP1_1')
-show(lime_local1_1)

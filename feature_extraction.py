@@ -10,7 +10,6 @@ import re
 from collections import defaultdict
 import nltk
 
-# nltk.download('stopwords')
 from nltk.corpus import stopwords
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
