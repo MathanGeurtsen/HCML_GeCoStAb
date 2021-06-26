@@ -73,7 +73,7 @@ def extract_features(data: pd.DataFrame, max_features: int = 150, seed:int = 1) 
     X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=seed)
     X_train = pd.DataFrame(X_train, columns=vectorizer.vocabulary_.keys())
 
-    return (X_train, X_test, y_train, y_test, vectorizer.vocabulary_)
+    return (X_train, X_test, y_train, y_test, vectorizer)
 
 
 def extract_features_csv(file_name: str, max_features: int = 150) -> Tuple:

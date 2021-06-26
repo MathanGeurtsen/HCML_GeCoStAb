@@ -6,7 +6,7 @@ from auxiliary import (print_metrics, plot_tree)
 
 def train_model(data_file, max_features=200):
     print("training tree model... ", end="")
-    X_train, X_test, y_train, y_test, voc = extract_features_csv(
+    X_train, X_test, y_train, y_test, vec = extract_features_csv(
         data_file, max_features=200
     )
 
@@ -17,8 +17,8 @@ def train_model(data_file, max_features=200):
     print("Done")
 
     print_metrics(y_test, y_predict)
-    plot_tree(clf, voc)
-    return clf, X_train, X_test, y_train, y_test, voc, y_predict
+    plot_tree(clf, vec)
+    return clf, X_train, X_test, y_train, y_test, vec, y_predict
 
 
 if __name__ == "__main__":

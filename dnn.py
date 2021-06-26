@@ -9,7 +9,7 @@ from typing import Tuple
 
 def train_model(data_file: str, max_features: int=200, max_iter: int=10000) -> Tuple:
     print("training dnn model... ", end="")
-    X_train, X_test, y_train, y_test, voc = extract_features_csv(data_file, max_features=max_features)
+    X_train, X_test, y_train, y_test, vec = extract_features_csv(data_file, max_features=max_features)
     clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 2), max_iter=max_iter)
     clf.fit(X_train, y_train)
 
@@ -18,7 +18,7 @@ def train_model(data_file: str, max_features: int=200, max_iter: int=10000) -> T
 
     print_metrics(y_test, y_predict)
 
-    return clf, X_train, X_test, y_train, y_test, voc, y_predict
+    return clf, X_train, X_test, y_train, y_test, vec, y_predict
 
 if __name__ == "__main__":
     _ = train_model("archive/grouped_data.csv")

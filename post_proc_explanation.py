@@ -20,7 +20,7 @@ def shap_local_explanation(clf, X_train, datapoint, label):
 
 
 if __name__ == "__main__":
-    clf, X_train, X_test, y_train, y_test, voc, y_predict = train_model("archive/grouped_data.csv")
+    clf, X_train, X_test, y_train, y_test, vec, y_predict = train_model("archive/grouped_data.csv")
 
     lime_local_explanation(clf, X_train, X_test[:1], y_test[:1])
     shap_local_explanation(clf, X_train, X_test[:1], y_test[:1])

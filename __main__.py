@@ -7,7 +7,7 @@ import decision_tree
 from post_proc_explanation import (lime_local_explanation, shap_local_explanation)
 from feature_extraction import (group_tweets, sanitize_data)
 
-from auxiliary import classify_user
+from auxiliary import classify_explain_user
 
 from time import sleep
 
@@ -56,8 +56,12 @@ if __name__ == "__main__":
 
     tree_tuple = decision_tree.train_model(data_file)
     tree_model = tree_tuple[0]
+
+    vec = tree_tuple[5]
+    X_train = tree_tuple[1]
+
     
-    classify_user()
+    classify_explain_user(vec, tree_model, dnn_model, X_train, user_file)
 
     # lime_local_explanation(clf, X_train, X_test[:1], y_test[:1])
     # shap_local_explanation(clf, X_train, X_test[:1], y_test[:1])
