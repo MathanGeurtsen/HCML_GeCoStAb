@@ -18,9 +18,13 @@ def plot_tree(clf, voc):
     )
     graph = graphviz.Source(dot_data)
     graph.render("iris")
-    graph
+    print("visualized tree to iris.pdf") 
+    
 
 def print_metrics(y_test: np.array, y_predict: np.array) -> None:
     print("Accuracy = " + str(accuracy_score(y_true=y_test, y_pred=y_predict)))
     print("Precision = " + str(precision_score(y_true=y_test, y_pred=y_predict)))
-    print("Recall = " + str(recall_score(y_true=y_test, y_pred=y_predict)))
+    print("Recall = " + str(recall_score(y_true=y_test, y_pred=y_predict)), end="\n\n")
+
+def classify_user():
+    raise NotImplementedError

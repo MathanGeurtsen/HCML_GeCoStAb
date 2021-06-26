@@ -1,19 +1,20 @@
-from nltk import tokenize
-import numpy as np
-from numpy.core.defchararray import index
-import pandas as pd
-from nltk import ngrams
+import nltk
+from nltk import (tokenize, ngrams)
+
 from nltk.tokenize import RegexpTokenizer
 from nltk.stem import PorterStemmer
+from nltk.corpus import stopwords
+
+from numpy.core.defchararray import index
+import numpy as np
+import pandas as pd
 
 import re
 from collections import defaultdict
-import nltk
-
-from nltk.corpus import stopwords
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.model_selection import train_test_split
+
 from typing import List, Tuple
 
 """
@@ -60,7 +61,7 @@ def compute_ngram_frequencies(tweet: Tweet) -> dict:
     return n_gram_frequencies
 
 
-def extract_features(data: pd.DataFrame, max_features: int = 150) -> Tuple:
+def extract_features(data: pd.DataFrame, max_features: int = 150, seed:int = 1) -> Tuple:
     vectorizer = CountVectorizer(max_features=max_features, min_df=5, max_df=0.7)
 
     X = vectorizer.fit_transform(data.CleanTweet).toarray()
@@ -69,8 +70,10 @@ def extract_features(data: pd.DataFrame, max_features: int = 150) -> Tuple:
     X = tfidfconverter.fit_transform(X).toarray()
 
     Y = data.BinaryParty.to_numpy()
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=seed)
+    X_train = pd.DataFrame(X_train, columns=vectorizer.vocabulary_.keys())
 
-    return (*train_test_split(X, Y, test_size=0.2), vectorizer.vocabulary_)
+    return (X_train, X_test, y_train, y_test, vectorizer.vocabulary_)
 
 
 def extract_features_csv(file_name: str, max_features: int = 150) -> Tuple:
@@ -78,6 +81,28 @@ def extract_features_csv(file_name: str, max_features: int = 150) -> Tuple:
     data.dropna(inplace=True)
     return extract_features(data, max_features=max_features)
 
+def group_tweets(target_dir, source_file_name, grouped_file_name):
+    df = pd.read_csv(target_dir + source_file_name)
+    df.dropna(inplace=True)
+    df = df.groupby('Handle').agg(lambda x: " ".join(list(set(x.tolist()))))
+    df.to_csv(target_dir + grouped_file_name)
+
+def sanitize_data(target_dir, source_file, sanitized_file):
+    data = pd.read_csv(target_dir + source_file )    
+    data.dropna(inplace=True)
+
+    # Add clean tweets, binary party to data
+    clean_tweets = []
+    for i in range(len(data)):
+        tweet = data.iloc[i]["Tweet"]
+        cleanTweet = CleanTweet(tweet)
+        clean_tweets.append(cleanTweet)
+
+    data["CleanTweet"] = clean_tweets
+    data["BinaryParty"] = (data["Party"] == "Democrat").astype(int)
+
+
+    data.to_csv(target_dir + sanitized_file)
 
 if __name__ == "__main__":
 
