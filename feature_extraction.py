@@ -17,6 +17,8 @@ from sklearn.model_selection import train_test_split
 
 from typing import List, Tuple
 
+from auxiliary import dict_sort
+
 """
 TODO: 
 * Remove RTs
@@ -66,28 +68,39 @@ def extract_features(data: pd.DataFrame, max_features: int = 150, seed:int = 1) 
 
     X = vectorizer.fit_transform(data.CleanTweet).toarray()
 
+    voc_sorted = dict_sort(vectorizer.vocabulary_)
+    
     tfidfconverter = TfidfTransformer()
     X = tfidfconverter.fit_transform(X).toarray()
 
     Y = data.BinaryParty.to_numpy()
     X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=seed)
-    X_train = pd.DataFrame(X_train, columns=vectorizer.vocabulary_.keys())
+    X_train = pd.DataFrame(X_train, columns=voc_sorted.keys())
 
     return (X_train, X_test, y_train, y_test, vectorizer)
 
 
 def extract_features_csv(file_name: str, max_features: int = 150) -> Tuple:
+    """ facade over extract_features
+    """
+
     data = pd.read_csv(file_name)
     data.dropna(inplace=True)
     return extract_features(data, max_features=max_features)
 
-def group_tweets(target_dir, source_file_name, grouped_file_name):
+def group_tweets(target_dir:str, source_file_name:str, grouped_file_name:str) -> None:
+    """ takes in the extracted tweets and groups by user. 
+    """
+
     df = pd.read_csv(target_dir + source_file_name)
     df.dropna(inplace=True)
     df = df.groupby('Handle').agg(lambda x: " ".join(list(set(x.tolist()))))
     df.to_csv(target_dir + grouped_file_name)
 
-def sanitize_data(target_dir, source_file, sanitized_file):
+def sanitize_data(target_dir:str, source_file: str, sanitized_file:str) -> None:
+    """ cleans tweets using a standard tokenizer and adds binary labels to the dataset. 
+    """
+
     data = pd.read_csv(target_dir + source_file )    
     data.dropna(inplace=True)
 

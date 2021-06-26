@@ -4,8 +4,14 @@ from sklearn import tree
 
 from auxiliary import (print_metrics, plot_tree)
 
-def train_model(data_file, max_features=200):
+import sys
+
+def train_model(data_file: str, max_features=200) -> None:
+    """ Train a decision tree model based on a given datafile. 
+    """
+
     print("training tree model... ", end="")
+    sys.stdout.flush()
     X_train, X_test, y_train, y_test, vec = extract_features_csv(
         data_file, max_features=200
     )

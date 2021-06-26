@@ -2,13 +2,13 @@
 
 This repository houses the code for project GeCoStAb, an explainability comparison for tweet classification into political identity. 
 
-The program requires the kaggle dataset to be downloaded, and requires the path to the extracted folder as an argument, together with a path to a user_file it is to explain (also see [prerequisites](#Prerequisites)). If a shell running in the same folder as this README , then this program might be run like: 
+The program requires the kaggle dataset to be downloaded and extracted. (also see [prerequisites](#Prerequisites)). If a shell running in the same folder as this README , then this program might be run like: 
 
 ```
-python . "archive" "user_file.csv" yes
+python -i . "archive" "user_file.csv" yes
 ```
 
-it will then perform preprocessing steps and train two models: a neural network and a decision tree. The decision tree will visualized in `decision_tree_viz`, the neural network will be evaluated locally on the `user_file`. 
+it will then perform preprocessing steps and train two models: a neural network and a decision tree. The decision tree will be visualized in `iris.pdf`, and the decision path for the user will also be shown. The neural network will also be evaluated for the user with both a SHAP and a LIME analysis. (the `-i` flag is recommended for interactivity, which keeps the server hosting the LIME and SHAP gui running) 
 
 The models can be trained simply by running `python dnn.py` and `python decision_tree.py`, which will output training accuracy measures (this assumes the extracted kaggle dataset to be available in archive, and that preprocessing is already done). 
 

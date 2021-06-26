@@ -4,10 +4,8 @@ import sys
 import dnn
 import decision_tree
 
-from post_proc_explanation import (lime_local_explanation, shap_local_explanation)
+from post_proc_explanation import (lime_local_explanation, shap_local_explanation, classify_explain_user)
 from feature_extraction import (group_tweets, sanitize_data)
-
-from auxiliary import classify_explain_user
 
 from time import sleep
 
@@ -16,40 +14,40 @@ GROUPED_DATA_FILE     = "grouped_data.csv"
 SANITISED_DATA_FILE   = "grouped_data_sanitised.csv"
 
 if __name__ == "__main__":
-    if len(sys.argv) not in [3,4]:
+    if len(sys.argv) > 1 and sys.argv[1] in ["-h", "--help" "-?"]:
         print(
             "Usage: HCML_GeCoStAb "
-            + "<data_directory> <user_file> [<preprocess_data>]",
+            + "[<data_directory>] [<user_file>] [<preprocess_data>]",
             end="\n\n",
         )
         print(
-            "Classifies partisan tweets. Trains an explainable model and a black box model on data in <data-directory>, then explains a local classification on <user-file>. Assumed data is already preprocessed, can performs preprocessing if <preprocess_data> is given and set to True."
+            "Classifies partisan tweets. All arguments optional. Trains an explainable model and a black box model on data in <data-directory> (defaults to \"archive\", then explains a local classification on <user-file> (defaults to \"example-user.csv\". performs preprocessing if <preprocess_data> is given and set to True. (defaults to True)"
         )
         sys.exit()
 
-    # data_file = "grouped_data.csv"
-    # user_file = "example-user.csv"
+    if len(sys.argv) > 1:
+        data_directory = sys.argv[1]
+        if data_directory[len(data_directory) -1] == "\\":
+            data_directory = data_directory[:-1]
+            data_directory = data_directory + "/"
+    else:
+        data_directory = "./archive/"
+            
+    if len(sys.argv) > 2:
+        user_file = sys.argv[2]
+    else:
+        user_file = "example-user.csv"
 
-    data_directory = sys.argv[1]
-    if data_directory[len(data_directory) -1] == "\\":
-        data_directory = data_directory[:-1]
-    data_directory = data_directory + "/"
-        
-    user_file = sys.argv[2]
-
-    preprocess_data = True if ( len(sys.argv) == 4 and sys.argv[3].lower() in ["y", "yes", "true", "1"] ) else False
+    preprocess_data = False if ( len(sys.argv) == 4 and sys.argv[3].lower() not in ["y", "yes", "true", "1"] ) else True
 
     if preprocess_data:
         print("preprocessing data... ", end="")
+        sys.stdout.flush()
         group_tweets(data_directory, UNPROCESSED_DATA_FILE, GROUPED_DATA_FILE)
-        sleep(1)
         sanitize_data(data_directory, GROUPED_DATA_FILE, SANITISED_DATA_FILE)
-        sleep(1)
         print("Done")
 
     data_file = data_directory + SANITISED_DATA_FILE
-
-    ###########
 
     dnn_tuple = dnn.train_model(data_file)
     dnn_model, X_train, X_test, y_train, y_test, voc, y_predict = dnn_tuple
@@ -59,18 +57,5 @@ if __name__ == "__main__":
 
     vec = tree_tuple[5]
     X_train = tree_tuple[1]
-
     
     classify_explain_user(vec, tree_model, dnn_model, X_train, user_file)
-
-    # lime_local_explanation(clf, X_train, X_test[:1], y_test[:1])
-    # shap_local_explanation(clf, X_train, X_test[:1], y_test[:1])
-
-
-    
-    
-
-    
-    
-
-    

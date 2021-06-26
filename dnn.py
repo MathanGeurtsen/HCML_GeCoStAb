@@ -7,8 +7,14 @@ from auxiliary import print_metrics
 
 from typing import Tuple
 
+import sys
+
 def train_model(data_file: str, max_features: int=200, max_iter: int=10000) -> Tuple:
+    """ Train a neural network model based on a given datafile. 
+    """
+
     print("training dnn model... ", end="")
+    sys.stdout.flush()
     X_train, X_test, y_train, y_test, vec = extract_features_csv(data_file, max_features=max_features)
     clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 2), max_iter=max_iter)
     clf.fit(X_train, y_train)
