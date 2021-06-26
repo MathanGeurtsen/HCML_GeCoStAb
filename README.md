@@ -2,7 +2,7 @@
 
 This repository houses the code for project GeCoStAb, an explainability comparison for tweet classification into political identity. 
 
-The program requires the kaggle dataset to be downloaded, and requires the path to the extracted folder as an argument, together with a path to a user_file it is to explain. If a shell running in the same folder as this README, then this program might be run like: 
+The program requires the kaggle dataset to be downloaded, and requires the path to the extracted folder as an argument, together with a path to a user_file it is to explain (also see [prerequisites](#Prerequisites)). If a shell running in the same folder as this README , then this program might be run like: 
 
 ```
 python . "archive" "user_file.csv" yes
@@ -17,8 +17,10 @@ The models can be trained simply by running `python dnn.py` and `python decision
 the required packages can be downloaded with pip: `pip install -r requirements.txt`. 
 We use the nltk stopwords dataset, which needs to be downloaded as well. run the following in a python shell: 
 
-```import nltk
-nltk.download('stopwords')```
+```
+import nltk
+nltk.download('stopwords')
+```
 
 The model trains on a kaggle dataset (see links below). This dataset should be extracted. 
 
